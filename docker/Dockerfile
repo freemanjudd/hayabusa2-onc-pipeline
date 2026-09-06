@@ -11,7 +11,7 @@
 FROM mambaorg/micromamba:2.0.5
 
 LABEL org.opencontainers.image.description="USGS ISIS + rclone for Hayabusa2 ONC-W2 processing"
-LABEL org.opencontainers.image.source="https://github.com/"
+LABEL org.opencontainers.image.source="https://github.com/freemanjudd/hayabusa2-onc-pipeline"
 
 USER root
 RUN apt-get update \

@@ -11,6 +11,7 @@ installed locally** — it runs only inside GitHub Actions, packaged in a Docker
 image. Everything you run on your own machine (data download, manifest
 generation, the web viewer) is pure Python / JavaScript with no dependencies.
 
+**Repo:** <https://github.com/freemanjudd/hayabusa2-onc-pipeline> &nbsp;·&nbsp;
 **Live viewer:** _not published yet_ &nbsp;·&nbsp; cost to run: **$0**
 
 ## How it works

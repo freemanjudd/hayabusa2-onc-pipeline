@@ -100,9 +100,13 @@ bash scripts/isis_pipeline.sh --dry-run data/raw web/data/images
 
 ## Status / TODO
 
-- [ ] GitHub repo created + pushed (`hayabusa2-onc-pipeline`, Public)
-- [ ] Repo Settings → Actions → Workflow permissions → Read and write
+Repo: <https://github.com/freemanjudd/hayabusa2-onc-pipeline>
+GHCR image: `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis`
+
+- [x] GitHub repo created + pushed (`freemanjudd/hayabusa2-onc-pipeline`, Public)
+- [x] Repo Settings → Actions → Workflow permissions → Read and write
+- [x] Pages → Source: GitHub Actions
 - [ ] `build-isis-image.yml` run once → image in GHCR
 - [ ] `process-images.yml` run with `frame_count=1`, then `20`, then `commit_results=true`
-- [ ] Pages enabled (Source: GitHub Actions) → live URL recorded here and in README
-- Live site: _not published yet_
+- [ ] Pages deploy verified → live URL recorded here and in README
+- Live site: _not published yet_ (expected `https://freemanjudd.github.io/hayabusa2-onc-pipeline/`)

@@ -42,7 +42,10 @@ FITS_MAGIC = b"SIMPLE  ="
 MIN_FIT_BYTES = 100_000
 MIN_XML_BYTES = 1_000
 
-USER_AGENT = "hayabusa2-onc-pipeline/0.1 (+https://github.com/; research/education)"
+USER_AGENT = (
+    "hayabusa2-onc-pipeline/0.1 "
+    "(+https://github.com/freemanjudd/hayabusa2-onc-pipeline; research/education)"
+)
 
 log = logging.getLogger("download_data")
 
