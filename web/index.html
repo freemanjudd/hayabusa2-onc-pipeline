@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hayabusa2 ONC-W2 — Earth Flyby, 3 Dec 2015</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>Hayabusa2 ONC-W2</h1>
+    <p class="tagline">Wide-angle camera frames from the Earth gravity-assist flyby &mdash; 3 December 2015</p>
+    <p id="dataset-line" class="dataset-line"></p>
+  </header>
+
+  <main>
+    <p id="status" class="status">Loading&hellip;</p>
+    <section id="gallery" class="gallery" aria-label="Image gallery"></section>
+  </main>
+
+  <div id="viewer" class="viewer" hidden aria-modal="true" role="dialog" aria-label="Image detail">
+    <button class="viewer-close" data-action="close" aria-label="Close">&times;</button>
+    <button class="viewer-nav viewer-prev" data-action="prev" aria-label="Previous image">&#8249;</button>
+    <button class="viewer-nav viewer-next" data-action="next" aria-label="Next image">&#8250;</button>
+    <figure class="viewer-figure">
+      <img id="viewer-img" alt="">
+      <figcaption id="viewer-meta" class="viewer-meta"></figcaption>
+    </figure>
+  </div>
+
+  <footer class="site-footer">
+    <p id="citation"></p>
+    <p>
+      Code: <a href="https://github.com/" rel="noopener">GitHub repository</a> &middot;
+      Processed with <a href="https://github.com/DOI-USGS/ISIS3" rel="noopener">USGS ISIS</a>
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

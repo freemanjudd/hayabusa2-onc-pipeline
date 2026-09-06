@@ -1,0 +1,39 @@
+# --- Pipeline data: never commit raw or intermediate scientific products ---
+# Only web/data/** (final PNGs + manifest.json) is allowed in git.
+/data/
+*.fit
+*.fits
+*.FIT
+*.FITS
+*.cub
+*.CUB
+*.lbl
+*.LBL
+# ISIS working/scratch output produced inside the CI container
+/out/
+/work/
+pipeline.log
+*.geom.json
+isisdata/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# --- OS / editor ---
+.DS_Store
+*.swp
+.idea/
+.vscode/
+
+# --- Explicit allow-list overrides (belt and braces) ---
+!web/data/
+!web/data/manifest.json
+!web/data/images/
+!web/data/images/*.png

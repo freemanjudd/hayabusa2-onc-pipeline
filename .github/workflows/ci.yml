@@ -1,0 +1,44 @@
+name: ci
+
+# Fast checks for the pure-Python / shell side. No ISIS, no Docker.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install dev tools
+        run: pip install pytest ruff
+      - name: Ruff
+        run: ruff check .
+      - name: Pytest
+        run: python -m pytest -q
+
+  shell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck
+        run: |
+          sudo apt-get update && sudo apt-get install -y shellcheck
+          shellcheck scripts/isis_pipeline.sh
+      - name: bash syntax
+        run: bash -n scripts/isis_pipeline.sh
+
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ISIS pipeline --dry-run (no ISIS needed)
+        run: |
+          mkdir -p /tmp/in
+          touch /tmp/in/hyb2_onc_20151203_000006_w2f_l2a.fit
+          bash scripts/isis_pipeline.sh --dry-run /tmp/in /tmp/out

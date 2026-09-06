@@ -1,0 +1,590 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1E00.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/img/v1/PDS4_IMG_1E00_1860.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://pds.nasa.gov/pds4/geom/v1/PDS4_GEOM_1E00_1950.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<?xml-model href="https://data.darts.isas.jaxa.jp/pub/pds4/mission/hyb2/v1/PDS4_HYB2_1E00_1200.sch" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<Product_Observational
+    xmlns="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:pds="http://pds.nasa.gov/pds4/pds/v1"
+    xmlns:disp="http://pds.nasa.gov/pds4/disp/v1"
+    xmlns:img="http://pds.nasa.gov/pds4/img/v1"
+    xmlns:geom="http://pds.nasa.gov/pds4/geom/v1"
+    xmlns:hyb2="http://darts.isas.jaxa.jp/pds4/mission/hyb2/v1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://pds.nasa.gov/pds4/pds/v1 https://pds.nasa.gov/pds4/pds/v1/PDS4_PDS_1E00.xsd
+                        http://pds.nasa.gov/pds4/disp/v1 https://pds.nasa.gov/pds4/disp/v1/PDS4_DISP_1B00.xsd
+                        http://pds.nasa.gov/pds4/img/v1 https://pds.nasa.gov/pds4/img/v1/PDS4_IMG_1E00_1860.xsd
+                        http://pds.nasa.gov/pds4/geom/v1 https://pds.nasa.gov/pds4/geom/v1/PDS4_GEOM_1E00_1950.xsd
+                        http://darts.isas.jaxa.jp/pds4/mission/hyb2/v1 https://data.darts.isas.jaxa.jp/pub/pds4/mission/hyb2/v1/PDS4_HYB2_1E00_1200.xsd">
+    <Identification_Area>
+        <logical_identifier>urn:jaxa:darts:hyb2_onc:data_raw:hyb2_onc_20151203_092958_w2f_l2a</logical_identifier>
+        <version_id>1.0</version_id>
+        <title>Hayabusa2 ONC raw/partially onboard processed image data product hyb2_onc_20151203_092958_w2f_l2a</title>
+        <information_model_version>1.14.0.0</information_model_version>
+        <product_class>Product_Observational</product_class>
+        <Modification_History>
+            <Modification_Detail>
+                <modification_date>2023-07-10</modification_date>
+                <version_id>1.0</version_id>
+                <description>Initial version.</description>
+            </Modification_Detail>
+        </Modification_History>
+    </Identification_Area>
+    <Observation_Area>
+        <Time_Coordinates>
+            <start_date_time>2015-12-03T09:29:58.128Z</start_date_time>
+            <stop_date_time>2015-12-03T09:29:58.131Z</stop_date_time>
+        </Time_Coordinates>
+        <Primary_Result_Summary>
+            <purpose>Science</purpose>
+            <processing_level>Raw</processing_level>
+            <description>This file contains a raw/partially onboard processed image data (l2a) from the ONC instrument.</description>
+            <Science_Facets>
+                <wavelength_range>Visible</wavelength_range>
+                <discipline_name>Small Bodies</discipline_name>
+            </Science_Facets>
+        </Primary_Result_Summary>
+        <Investigation_Area>
+            <name>Hayabusa2</name>
+            <type>Mission</type>
+            <Internal_Reference>
+                <lid_reference>urn:jaxa:darts:context:investigation:mission.hyb2</lid_reference>
+                <reference_type>data_to_investigation</reference_type>
+            </Internal_Reference>
+        </Investigation_Area>
+        <Observing_System>
+            <Observing_System_Component>
+                <name>Hayabusa2</name>
+                <type>Host</type>
+                <Internal_Reference>
+                    <lid_reference>urn:jaxa:darts:context:instrument_host:spacecraft.hyb2</lid_reference>
+                    <reference_type>is_instrument_host</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+            <Observing_System_Component>
+                <name>Optical Navigation Camera (ONC)</name>
+                <type>Instrument</type>
+                <Internal_Reference>
+                    <lid_reference>urn:jaxa:darts:context:instrument:hyb2.onc</lid_reference>
+                    <reference_type>is_instrument</reference_type>
+                </Internal_Reference>
+            </Observing_System_Component>
+        </Observing_System>
+        <Target_Identification>
+            <name>Earth</name>
+            <type>Planet</type>
+            <Internal_Reference>
+                <lid_reference>urn:nasa:pds:context:target:planet.earth</lid_reference>
+                <reference_type>data_to_target</reference_type>
+            </Internal_Reference>
+        </Target_Identification>
+        <Mission_Area>
+            <hyb2:Mission_Information>
+                <hyb2:mission_phase_name>Earth Swing-by Phase</hyb2:mission_phase_name>
+            </hyb2:Mission_Information>
+            <hyb2:Observation_Information>
+                <hyb2:observation_date_time>2015-12-03T09:29:58.129Z</hyb2:observation_date_time>
+                <hyb2:spacecraft_clock_start_count>1/1010567257</hyb2:spacecraft_clock_start_count>
+                <hyb2:spacecraft_clock_stop_count>1/1010567258</hyb2:spacecraft_clock_stop_count>
+                <hyb2:naif_instrument_name>HAYABUSA2_ONC-W2</hyb2:naif_instrument_name>
+                <hyb2:raw_file_name>01029_20151203092959_00003C3C0883.img</hyb2:raw_file_name>
+            </hyb2:Observation_Information>
+            <hyb2:Observation_Geometry>
+                <hyb2:ryugu_distance_from_spacecraft unit="km">175242000.0</hyb2:ryugu_distance_from_spacecraft>
+                <hyb2:earth_distance_from_spacecraft unit="km">19646.8</hyb2:earth_distance_from_spacecraft>
+                <hyb2:sun_distance_from_spacecraft unit="km">147477000.0</hyb2:sun_distance_from_spacecraft>
+                <hyb2:sun_distance_from_ryugu unit="km">149670000.0</hyb2:sun_distance_from_ryugu>
+                <hyb2:spacecraft_x_position unit="km">-118733000.0</hyb2:spacecraft_x_position>
+                <hyb2:spacecraft_y_position unit="km">88316000.0</hyb2:spacecraft_y_position>
+                <hyb2:spacecraft_z_position unit="km">22446900.0</hyb2:spacecraft_z_position>
+                <hyb2:sun_direction_spacecraft_x_axis_angle unit="deg">90.0</hyb2:sun_direction_spacecraft_x_axis_angle>
+                <hyb2:sun_direction_spacecraft_y_axis_angle unit="deg">89.0</hyb2:sun_direction_spacecraft_y_axis_angle>
+                <hyb2:sun_direction_spacecraft_z_axis_angle unit="deg">1.0</hyb2:sun_direction_spacecraft_z_axis_angle>
+                <hyb2:backplane_data_version>N/A</hyb2:backplane_data_version>
+            </hyb2:Observation_Geometry>
+            <hyb2:Image_Observation_Information>
+                <hyb2:exposure_duration unit="s">0.00272</hyb2:exposure_duration>
+                <hyb2:filter_name>None</hyb2:filter_name>
+                <hyb2:band_center unit="nm">567.0</hyb2:band_center>
+                <hyb2:bandwidth unit="nm">150.0</hyb2:bandwidth>
+                <hyb2:number_of_binning>1</hyb2:number_of_binning>
+                <hyb2:image_processing_return_status>Normal End</hyb2:image_processing_return_status>
+                <hyb2:actual_bitdepth>12</hyb2:actual_bitdepth>
+                <hyb2:unit_count_value>1.0</hyb2:unit_count_value>
+            </hyb2:Image_Observation_Information>
+            <hyb2:ONC_Image_Information>
+                <hyb2:dynamic_range>4096.0</hyb2:dynamic_range>
+                <hyb2:linearity_guaranteed_range>3100.0</hyb2:linearity_guaranteed_range>
+                <hyb2:observation_mode>Science</hyb2:observation_mode>
+                <hyb2:number_of_subimage>1</hyb2:number_of_subimage>
+                <hyb2:Sub_Image_Information>
+                    <hyb2:sequence_number>1</hyb2:sequence_number>
+                    <hyb2:spacecraft_clock_count>1/1010567258</hyb2:spacecraft_clock_count>
+                    <hyb2:analog_electronics_mode>Shot</hyb2:analog_electronics_mode>
+                    <hyb2:digital_electronics_selection>DE</hyb2:digital_electronics_selection>
+                    <hyb2:t_driving_status>Off</hyb2:t_driving_status>
+                    <hyb2:t_camera_selection_status>Off</hyb2:t_camera_selection_status>
+                    <hyb2:t_exposure_duration unit="s">0.0</hyb2:t_exposure_duration>
+                    <hyb2:t_filter_name>No. 3: 550 nm</hyb2:t_filter_name>
+                    <hyb2:flat_field_lamp_a_status>Off</hyb2:flat_field_lamp_a_status>
+                    <hyb2:flat_field_lamp_b_status>Off</hyb2:flat_field_lamp_b_status>
+                    <hyb2:w1_driving_status>Off</hyb2:w1_driving_status>
+                    <hyb2:w1_camera_selection_status>Off</hyb2:w1_camera_selection_status>
+                    <hyb2:w1_exposure_duration unit="s">0.0</hyb2:w1_exposure_duration>
+                    <hyb2:flash_lamp_status>Disable</hyb2:flash_lamp_status>
+                    <hyb2:w2_driving_status>On</hyb2:w2_driving_status>
+                    <hyb2:w2_camera_selection_status>On</hyb2:w2_camera_selection_status>
+                    <hyb2:w2_exposure_duration unit="s">0.00272</hyb2:w2_exposure_duration>
+                    <hyb2:filter_wheel_driver_timeout_error_count>0</hyb2:filter_wheel_driver_timeout_error_count>
+                    <hyb2:filter_wheel_driver_null_position_flag>Detected</hyb2:filter_wheel_driver_null_position_flag>
+                    <hyb2:filter_wheel_driver_position_sensor_status>Off</hyb2:filter_wheel_driver_position_sensor_status>
+                    <hyb2:filter_wheel_driver_reset_status>Not In Reset Sequence</hyb2:filter_wheel_driver_reset_status>
+                    <hyb2:filter_wheel_driver_driving_status>Stop</hyb2:filter_wheel_driver_driving_status>
+                    <hyb2:filter_wheel_driver_step_count>0</hyb2:filter_wheel_driver_step_count>
+                    <hyb2:filter_wheel_driver_step_counter_error_count>0</hyb2:filter_wheel_driver_step_counter_error_count>
+                </hyb2:Sub_Image_Information>
+            </hyb2:ONC_Image_Information>
+            <hyb2:ONC_Image_Processing_Parameters>
+                <hyb2:smear_correction_status>Not Applied</hyb2:smear_correction_status>
+                <hyb2:bias_correction_status>Not Applied</hyb2:bias_correction_status>
+                <hyb2:dark_correction_status>Not Applied</hyb2:dark_correction_status>
+                <hyb2:radiance_conversion_status>Not Applied</hyb2:radiance_conversion_status>
+                <hyb2:hardware_correction_status>Not Applied</hyb2:hardware_correction_status>
+                <hyb2:nonlinearity_correction_status>Not Applied</hyb2:nonlinearity_correction_status>
+                <hyb2:flat_field_correction_status>Not Applied</hyb2:flat_field_correction_status>
+                <hyb2:temperature_dependent_flat_field_correction_status>Not Applied</hyb2:temperature_dependent_flat_field_correction_status>
+                <hyb2:stray_light_correction_status>Not Applied</hyb2:stray_light_correction_status>
+                <hyb2:alignment_offset_correction_status>Not Conducted</hyb2:alignment_offset_correction_status>
+                <hyb2:distortion_correction_status>Not Applied</hyb2:distortion_correction_status>
+                <hyb2:radiometric_calibration_status>Not Applied</hyb2:radiometric_calibration_status>
+                <hyb2:ccd_sensitivity_calibration_status>Not Applied</hyb2:ccd_sensitivity_calibration_status>
+                <hyb2:ccd_sensitivity>0.0</hyb2:ccd_sensitivity>
+                <hyb2:sensitivity_calibration_period>All Periods</hyb2:sensitivity_calibration_period>
+                <hyb2:elapsed_time_for_sensitivity_calibration unit="day">40.0</hyb2:elapsed_time_for_sensitivity_calibration>
+                <hyb2:solar_distance_correction_status>Not Applied</hyb2:solar_distance_correction_status>
+                <hyb2:solar_distance_for_calibration unit="AU">0.0</hyb2:solar_distance_for_calibration>
+                <hyb2:effective_solar_irradiance unit="W/m**2/nm">0.0</hyb2:effective_solar_irradiance>
+                <hyb2:photometric_correction_status>Not Applied</hyb2:photometric_correction_status>
+            </hyb2:ONC_Image_Processing_Parameters>
+            <hyb2:ONC_Instrument_Attributes>
+                <hyb2:bus_line_voltage unit="V">49.28</hyb2:bus_line_voltage>
+                <hyb2:onc_electric_current unit="A">0.52</hyb2:onc_electric_current>
+                <hyb2:fla_c_electric_current unit="A">0.0</hyb2:fla_c_electric_current>
+                <hyb2:onc_analog_electronics_temperature unit="degC">1.53</hyb2:onc_analog_electronics_temperature>
+                <hyb2:t_optics_temperature unit="degC">20.34</hyb2:t_optics_temperature>
+                <hyb2:t_ccd_temperature unit="degC">-29.24</hyb2:t_ccd_temperature>
+                <hyb2:t_electric_circuit_temperature unit="degC">-11.45</hyb2:t_electric_circuit_temperature>
+                <hyb2:w1_optics_temperature unit="degC">0.47</hyb2:w1_optics_temperature>
+                <hyb2:w1_ccd_temperature unit="degC">-25.67</hyb2:w1_ccd_temperature>
+                <hyb2:w1_electric_circuit_temperature unit="degC">-10.38</hyb2:w1_electric_circuit_temperature>
+                <hyb2:w2_optics_temperature unit="degC">1.83</hyb2:w2_optics_temperature>
+                <hyb2:w2_ccd_temperature unit="degC">-24.84</hyb2:w2_ccd_temperature>
+                <hyb2:w2_electric_circuit_temperature unit="degC">-4.12</hyb2:w2_electric_circuit_temperature>
+                <hyb2:fla_c_temperature unit="degC">-14.75</hyb2:fla_c_temperature>
+            </hyb2:ONC_Instrument_Attributes>
+        </Mission_Area>
+        <Discipline_Area>
+            <disp:Display_Settings>
+                <Local_Internal_Reference>
+                    <local_identifier_reference>ImageData</local_identifier_reference>
+                    <local_reference_type>display_settings_to_array</local_reference_type>
+                </Local_Internal_Reference>
+                <disp:Display_Direction>
+                    <disp:horizontal_display_axis>Sample</disp:horizontal_display_axis>
+                    <disp:horizontal_display_direction>Left to Right</disp:horizontal_display_direction>
+                    <disp:vertical_display_axis>Line</disp:vertical_display_axis>
+                    <disp:vertical_display_direction>Top to Bottom</disp:vertical_display_direction>
+                </disp:Display_Direction>
+            </disp:Display_Settings>
+            <geom:Geometry>
+                <geom:SPICE_Kernel_Files>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>LSK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>naif0012.tls</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Provenance Not Applicable</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:lsk_naif0012.tls::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>PCK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>pck00010.tpc</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:pck_pck00010.tpc::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>PCK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>ryugu_v10.tpc</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:pck_ryugu_v10.tpc::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>SCLK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_20210915_v01.tsc</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:sclk_hyb2_20210915_v01.tsc::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>IK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_lidar_v02.ti</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:ik_hyb2_lidar_v02.ti::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>IK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_nirs3_v03.ti</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:ik_hyb2_nirs3_v03.ti::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>IK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_onc_v05.ti</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:ik_hyb2_onc_v05.ti::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>IK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_tir_v04.ti</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:ik_hyb2_tir_v04.ti::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>FK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_hp_v01.tf</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:fk_hyb2_hp_v01.tf::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>FK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_v15.tf</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:fk_hyb2_v15.tf::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>FK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_ryugu_v01.tf</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:fk_hyb2_ryugu_v01.tf::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>FK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_shape_v01.tf</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:fk_hyb2_shape_v01.tf::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>SPK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_de430.bsp</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:spk_hyb2_de430.bsp::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>SPK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_jup329.bsp</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:spk_hyb2_jup329.bsp::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>SPK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_mar097.bsp</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:spk_hyb2_mar097.bsp::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>SPK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_20141203-20180628_0001h_final_ver1.bsp</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:spk_hyb2_20141203-20180628_0001h_final_ver1.bsp::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>SPK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_20151123-20151213_0001m_final_ver1.bsp</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:spk_hyb2_20151123-20151213_0001m_final_ver1.bsp::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>SPK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>2162173_ryugu_v01.bsp</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:spk_2162173_ryugu_v01.bsp::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>CK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_hkattrpt_2015_v02.bc</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:ck_hyb2_hkattrpt_2015_v02.bc::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                    <geom:SPICE_Kernel_Identification>
+                        <geom:kernel_type>CK</geom:kernel_type>
+                        <geom:spice_kernel_file_name>hyb2_aocsc_2015_v02.bc</geom:spice_kernel_file_name>
+                        <geom:kernel_provenance>Reconstructed</geom:kernel_provenance>
+                        <Internal_Reference>
+                            <lidvid_reference>urn:jaxa:darts:hyb2_spice:spice_kernels:ck_hyb2_aocsc_2015_v02.bc::1.0</lidvid_reference>
+                            <reference_type>geometry_to_SPICE_kernel</reference_type>
+                        </Internal_Reference>
+                    </geom:SPICE_Kernel_Identification>
+                </geom:SPICE_Kernel_Files>
+                <geom:Image_Display_Geometry>
+                    <Local_Internal_Reference>
+                        <local_identifier_reference>ImageData</local_identifier_reference>
+                        <local_reference_type>display_to_data_object</local_reference_type>
+                    </Local_Internal_Reference>
+                    <geom:Display_Direction>
+                        <geom:horizontal_display_axis>Sample</geom:horizontal_display_axis>
+                        <geom:horizontal_display_direction>Left to Right</geom:horizontal_display_direction>
+                        <geom:vertical_display_axis>Line</geom:vertical_display_axis>
+                        <geom:vertical_display_direction>Top to Bottom</geom:vertical_display_direction>
+                    </geom:Display_Direction>
+                    <geom:Object_Orientation_RA_Dec>
+                        <geom:reference_pixel_location>Center</geom:reference_pixel_location>
+                        <geom:right_ascension_angle unit="deg">96.3903</geom:right_ascension_angle>
+                        <geom:declination_angle unit="deg">-29.645</geom:declination_angle>
+                        <geom:celestial_north_clock_angle xsi:nil="true" nilReason="unknown" unit="deg"></geom:celestial_north_clock_angle>
+                        <geom:Reference_Frame_Identification>
+                            <geom:frame_spice_name>J2000</geom:frame_spice_name>
+                        </geom:Reference_Frame_Identification>
+                    </geom:Object_Orientation_RA_Dec>
+                    <geom:Object_Orientation_RA_Dec>
+                        <geom:reference_pixel_location>Lower Left Corner</geom:reference_pixel_location>
+                        <geom:right_ascension_angle unit="deg">145.815</geom:right_ascension_angle>
+                        <geom:declination_angle unit="deg">-31.0709</geom:declination_angle>
+                        <geom:celestial_north_clock_angle xsi:nil="true" nilReason="unknown" unit="deg"></geom:celestial_north_clock_angle>
+                        <geom:Reference_Frame_Identification>
+                            <geom:frame_spice_name>J2000</geom:frame_spice_name>
+                        </geom:Reference_Frame_Identification>
+                    </geom:Object_Orientation_RA_Dec>
+                    <geom:Object_Orientation_RA_Dec>
+                        <geom:reference_pixel_location>Lower Right Corner</geom:reference_pixel_location>
+                        <geom:right_ascension_angle unit="deg">106.558</geom:right_ascension_angle>
+                        <geom:declination_angle unit="deg">11.5171</geom:declination_angle>
+                        <geom:celestial_north_clock_angle xsi:nil="true" nilReason="unknown" unit="deg"></geom:celestial_north_clock_angle>
+                        <geom:Reference_Frame_Identification>
+                            <geom:frame_spice_name>J2000</geom:frame_spice_name>
+                        </geom:Reference_Frame_Identification>
+                    </geom:Object_Orientation_RA_Dec>
+                    <geom:Object_Orientation_RA_Dec>
+                        <geom:reference_pixel_location>Upper Left Corner</geom:reference_pixel_location>
+                        <geom:right_ascension_angle unit="deg">68.0635</geom:right_ascension_angle>
+                        <geom:declination_angle unit="deg">-68.6204</geom:declination_angle>
+                        <geom:celestial_north_clock_angle xsi:nil="true" nilReason="unknown" unit="deg"></geom:celestial_north_clock_angle>
+                        <geom:Reference_Frame_Identification>
+                            <geom:frame_spice_name>J2000</geom:frame_spice_name>
+                        </geom:Reference_Frame_Identification>
+                    </geom:Object_Orientation_RA_Dec>
+                    <geom:Object_Orientation_RA_Dec>
+                        <geom:reference_pixel_location>Upper Right Corner</geom:reference_pixel_location>
+                        <geom:right_ascension_angle unit="deg">54.6142</geom:right_ascension_angle>
+                        <geom:declination_angle unit="deg">-12.4406</geom:declination_angle>
+                        <geom:celestial_north_clock_angle xsi:nil="true" nilReason="unknown" unit="deg"></geom:celestial_north_clock_angle>
+                        <geom:Reference_Frame_Identification>
+                            <geom:frame_spice_name>J2000</geom:frame_spice_name>
+                        </geom:Reference_Frame_Identification>
+                    </geom:Object_Orientation_RA_Dec>
+                </geom:Image_Display_Geometry>
+            </geom:Geometry>
+            <img:Imaging>
+                <Local_Internal_Reference>
+                    <local_identifier_reference>ImageData</local_identifier_reference>
+                    <local_reference_type>imaging_parameters_to_image_object</local_reference_type>
+                </Local_Internal_Reference>
+                <img:Detector>
+                    <img:first_line>1</img:first_line>
+                    <img:first_sample>1</img:first_sample>
+                    <img:lines>1024</img:lines>
+                    <img:samples>1056</img:samples>
+                    <img:detector_to_image_rotation unit="deg">0.0</img:detector_to_image_rotation>
+                    <img:detector_to_image_flip>None</img:detector_to_image_flip>
+                </img:Detector>
+                <img:Exposure>
+                    <img:exposure_count>1</img:exposure_count>
+                    <img:exposure_duration unit="s">0.00272</img:exposure_duration>
+                    <img:exposure_type>Manual</img:exposure_type>
+                </img:Exposure>
+                <img:Onboard_Compression>
+                    <img:onboard_compression_class>Lossy</img:onboard_compression_class>
+                    <img:onboard_compression_type>StarPixel Flexible</img:onboard_compression_type>
+                    <img:deferred_flag>false</img:deferred_flag>
+                    <img:StarPixel_Flexible_Parameters>
+                        <img:starpixel_initial_subsampling_interval>1</img:starpixel_initial_subsampling_interval>
+                        <img:starpixel_degradation>0</img:starpixel_degradation>
+                    </img:StarPixel_Flexible_Parameters>
+                </img:Onboard_Compression>
+                <img:Sampling>
+                    <img:crosstrack_summing>1</img:crosstrack_summing>
+                    <img:downtrack_summing>1</img:downtrack_summing>
+                    <img:sample_bits>16</img:sample_bits>
+                </img:Sampling>
+                <img:Subframe>
+                    <img:first_line>1</img:first_line>
+                    <img:first_sample>17</img:first_sample>
+                    <img:lines>1024</img:lines>
+                    <img:samples>1024</img:samples>
+                    <img:line_fov unit="rad">1.2023808</img:line_fov>
+                    <img:sample_fov unit="rad">1.2023808</img:sample_fov>
+                </img:Subframe>
+                <img:Instrument_State>
+                    <img:Device_Currents>
+                        <img:Device_Current>
+                            <img:device_name>ONC</img:device_name>
+                            <img:current_value unit="A">0.52</img:current_value>
+                        </img:Device_Current>
+                        <img:Device_Current>
+                            <img:device_name>FLA-C</img:device_name>
+                            <img:current_value unit="A">0.0</img:current_value>
+                        </img:Device_Current>
+                    </img:Device_Currents>
+                    <img:Device_Temperatures>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC Analog Electronics</img:device_name>
+                            <img:temperature_value unit="degC">1.53</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-T Optics</img:device_name>
+                            <img:temperature_value unit="degC">20.34</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-T CCD</img:device_name>
+                            <img:temperature_value unit="degC">-29.24</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-T Electric Circuit</img:device_name>
+                            <img:temperature_value unit="degC">-11.45</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-W1 Optics</img:device_name>
+                            <img:temperature_value unit="degC">0.47</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-W1 CCD</img:device_name>
+                            <img:temperature_value unit="degC">-25.67</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-W1 Electric Circuit</img:device_name>
+                            <img:temperature_value unit="degC">-10.38</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-W2 Optics</img:device_name>
+                            <img:temperature_value unit="degC">1.83</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-W2 CCD</img:device_name>
+                            <img:temperature_value unit="degC">-24.84</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>ONC-W2 Electric Circuit</img:device_name>
+                            <img:temperature_value unit="degC">-4.12</img:temperature_value>
+                        </img:Device_Temperature>
+                        <img:Device_Temperature>
+                            <img:device_name>FLA-C</img:device_name>
+                            <img:temperature_value unit="degC">-14.75</img:temperature_value>
+                        </img:Device_Temperature>
+                    </img:Device_Temperatures>
+                    <img:Device_Voltages>
+                        <img:Device_Voltage>
+                            <img:device_name>Bus Line</img:device_name>
+                            <img:voltage_value unit="V">49.28</img:voltage_value>
+                        </img:Device_Voltage>
+                    </img:Device_Voltages>
+                </img:Instrument_State>
+            </img:Imaging>
+        </Discipline_Area>
+    </Observation_Area>
+    <File_Area_Observational>
+        <File>
+            <file_name>hyb2_onc_20151203_092958_w2f_l2a.fit</file_name>
+            <creation_date_time>2021-09-21T02:40:36</creation_date_time>
+            <file_size unit="byte">2122560</file_size>
+            <comment>Hayabusa2 ONC image in the FITS standard format.</comment>
+        </File>
+        <Header>
+            <name>Hayabusa2 ONC FITS header of primary HDU</name>
+            <offset unit="byte">0</offset>
+            <object_length unit="byte">2880</object_length>
+            <parsing_standard_id>FITS 3.0</parsing_standard_id>
+        </Header>
+        <Header>
+            <name>Hayabusa2 ONC FITS header of secondary HDU</name>
+            <offset unit="byte">2880</offset>
+            <object_length unit="byte">20160</object_length>
+            <parsing_standard_id>FITS 3.0</parsing_standard_id>
+        </Header>
+        <Array_2D_Image>
+            <name>Hayabusa2 ONC FITS data of secondary HDU</name>
+            <local_identifier>ImageData</local_identifier>
+            <offset unit="byte">23040</offset>
+            <axes>2</axes>
+            <axis_index_order>Last Index Fastest</axis_index_order>
+            <description>Hayabusa2 ONC-W2 raw/partially onboard processed image</description>
+            <Element_Array>
+                <data_type>SignedMSB2</data_type>
+                <unit>DN</unit>
+            </Element_Array>
+            <Axis_Array>
+                <axis_name>Line</axis_name>
+                <elements>1024</elements>
+                <sequence_number>1</sequence_number>
+            </Axis_Array>
+            <Axis_Array>
+                <axis_name>Sample</axis_name>
+                <elements>1024</elements>
+                <sequence_number>2</sequence_number>
+            </Axis_Array>
+        </Array_2D_Image>
+    </File_Area_Observational>
+</Product_Observational>

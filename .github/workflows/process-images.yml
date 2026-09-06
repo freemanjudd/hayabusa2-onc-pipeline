@@ -1,0 +1,135 @@
+name: process-images
+
+# Pulls the prebuilt ISIS image, downloads source frames, runs the ISIS
+# pipeline, builds the manifest, and uploads everything as an artifact.
+# Optionally commits web/data/** back to the branch.
+#
+# Run build-isis-image FIRST (once) so ghcr.io/<owner>/<repo>/isis:latest exists.
+# Always start with frame_count = 1 to smoke-test before scaling to 20.
+
+on:
+  workflow_dispatch:
+    inputs:
+      frame_count:
+        description: "How many frames to process (from config/frames.txt, in order). Start with 1."
+        required: true
+        default: "1"
+      commit_results:
+        description: "Commit web/data/** (PNGs + manifest.json) back to this branch"
+        type: boolean
+        required: false
+        default: false
+
+concurrency:
+  group: process-images-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}/isis:latest
+  ISISDATA_CACHE_KEY: isisdata-hayabusa2-v1
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # for the optional commit
+      packages: read       # to pull the GHCR image
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate input
+        run: |
+          case "${{ inputs.frame_count }}" in
+            ''|*[!0-9]*) echo "frame_count must be a positive integer"; exit 1 ;;
+          esac
+          echo "Processing ${{ inputs.frame_count }} frame(s); commit_results=${{ inputs.commit_results }}"
+
+      - name: Download source frames (pure Python, no container)
+        run: |
+          python scripts/download_data.py --limit "${{ inputs.frame_count }}" --dest data/raw
+          echo "--- data/raw ---"; ls -la data/raw
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull ISIS image
+        run: docker pull "$IMAGE"
+
+      - name: Restore ISISDATA cache (Hayabusa2 slice only)
+        id: isisdata
+        uses: actions/cache@v4
+        with:
+          path: ~/isisdata
+          key: ${{ env.ISISDATA_CACHE_KEY }}
+
+      - name: Run ISIS pipeline in container
+        run: |
+          mkdir -p ~/isisdata web/data/images
+          docker run --rm \
+            -u root \
+            -e HOME=/tmp \
+            -e ISISDATA=/isisdata \
+            -v "$PWD":/work -w /work \
+            -v "$HOME/isisdata":/isisdata \
+            "$IMAGE" bash -c '
+              set -Eeuo pipefail
+              if [ ! -d /isisdata/hayabusa2 ] || [ -z "$(ls -A /isisdata/hayabusa2 2>/dev/null)" ]; then
+                echo ">>> ISISDATA cache miss: downloading Hayabusa2 + base slices ONLY"
+                downloadIsisData base /isisdata
+                downloadIsisData hayabusa2 /isisdata
+              else
+                echo ">>> ISISDATA/hayabusa2 restored from cache"
+              fi
+              du -sh /isisdata/* || true
+              bash scripts/isis_pipeline.sh data/raw web/data/images
+            '
+
+      - name: Build manifest (pure Python)
+        if: always()
+        run: |
+          if ls web/data/images/*.png >/dev/null 2>&1; then
+            python scripts/make_manifest.py \
+              --labels data/raw --images web/data/images --out web/data/manifest.json
+            echo "--- manifest.json ---"; cat web/data/manifest.json
+          else
+            echo "No PNGs produced — skipping manifest. Check pipeline.log in the artifact."
+          fi
+
+      - name: Upload artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: onc-w2-processed-${{ inputs.frame_count }}frames
+          path: |
+            web/data/**
+            pipeline.log
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Commit results
+        if: ${{ inputs.commit_results && success() }}
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f web/data/manifest.json web/data/images/*.png
+          if git diff --cached --quiet; then
+            echo "Nothing changed in web/data — not committing."
+          else
+            git commit -m "data: process ${{ inputs.frame_count }} ONC-W2 frame(s) [skip ci]"
+            git push
+            echo "Committed web/data/** to ${{ github.ref_name }}."
+          fi
+
+      - name: Next steps
+        if: ${{ !inputs.commit_results }}
+        run: |
+          echo "Artifact uploaded. Download it and review the PNGs + pipeline.log." >> "$GITHUB_STEP_SUMMARY"
+          echo "When satisfied, re-run this workflow with **commit_results = true**." >> "$GITHUB_STEP_SUMMARY"

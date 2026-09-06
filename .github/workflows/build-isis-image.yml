@@ -1,0 +1,68 @@
+name: build-isis-image
+
+# Builds docker/Dockerfile and pushes it to the GitHub Container Registry.
+# SLOW (the ISIS conda install can take a long time) but RARE — run this only
+# when docker/Dockerfile changes. process-images.yml just pulls the result.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Extra tag to apply (in addition to 'latest' and the commit SHA)"
+        required: false
+        default: ""
+
+concurrency:
+  group: build-isis-image
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}/isis
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Compute tags
+        id: tags
+        run: |
+          {
+            echo "tags<<EOF"
+            echo "${IMAGE}:latest"
+            echo "${IMAGE}:${GITHUB_SHA}"
+            if [ -n "${{ inputs.tag }}" ]; then echo "${IMAGE}:${{ inputs.tag }}"; fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
+          cache-to: type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max
+
+      - name: Summary
+        run: |
+          echo "### Pushed \`${IMAGE}\`" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.tags.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "Next: run **process-images** (it pulls \`${IMAGE}:latest\`)." >> "$GITHUB_STEP_SUMMARY"
