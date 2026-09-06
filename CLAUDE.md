@@ -108,6 +108,6 @@ GHCR image: `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis`
 - [x] Pages → Source: GitHub Actions
 - [x] First push; `ci` + `pages` workflows green
 - [x] Pages live: <https://freemanjudd.github.io/hayabusa2-onc-pipeline/> (placeholder data)
-- [ ] `build-isis-image.yml` run once → image in GHCR
+- [x] `build-isis-image.yml` succeeded (commit f981e40) → `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis:latest` in GHCR
 - [ ] `process-images.yml` run with `frame_count=1`, then `20`, then `commit_results=true`
 - [ ] Re-check live site after real data is committed
