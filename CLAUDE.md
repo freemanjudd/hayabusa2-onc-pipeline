@@ -106,7 +106,8 @@ GHCR image: `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis`
 - [x] GitHub repo created + pushed (`freemanjudd/hayabusa2-onc-pipeline`, Public)
 - [x] Repo Settings → Actions → Workflow permissions → Read and write
 - [x] Pages → Source: GitHub Actions
+- [x] First push; `ci` + `pages` workflows green
+- [x] Pages live: <https://freemanjudd.github.io/hayabusa2-onc-pipeline/> (placeholder data)
 - [ ] `build-isis-image.yml` run once → image in GHCR
 - [ ] `process-images.yml` run with `frame_count=1`, then `20`, then `commit_results=true`
-- [ ] Pages deploy verified → live URL recorded here and in README
-- Live site: _not published yet_ (expected `https://freemanjudd.github.io/hayabusa2-onc-pipeline/`)
+- [ ] Re-check live site after real data is committed
