@@ -114,10 +114,29 @@ def test_finalize_inpaints_smear_saturated_columns():
             data[ln * W + s] = v
     px, stats = finalize_png.finalize(data, W, H, edge=40)
     assert stats["dead_columns"] >= 3
-    # inpainted dead columns should read like their (dark, corrected) neighbours,
-    # not as a hard white or black stripe
+    # inpainted sky columns should read dark, like their neighbours -- not a stripe
     for s in range(78, 83):
         assert abs(px[30 * W + s] - px[30 * W + 70]) <= 8
+
+
+def test_finalize_wide_dead_band_across_saturated_target():
+    """The near-approach case: a big saturated disk with smear saturating a wide
+    central band. The band must fill white *through the disk* and black above it."""
+    ceiling = SKY + 2600.0                                # matches the real data
+    data = array("f", [0.0] * (W * H))
+    cx, cy, r = 80, 95, 34
+    for ln in range(H):
+        for s in range(W):
+            v = SKY + _noise(ln, s)
+            if abs(s - cx) < 40:                          # smear, saturating near core
+                v = min(ceiling, v + 6000 * (1 - abs(s - cx) / 40))
+            if (ln - cy) ** 2 + (s - cx) ** 2 <= r * r:   # saturated disk
+                v = ceiling
+            data[ln * W + s] = v
+    px, stats = finalize_png.finalize(data, W, H, edge=40)
+    assert stats["dead_columns"] > 10
+    assert px[cy * W + cx] == 255                          # disk centre: white
+    assert px[10 * W + cx] < 30                            # sky above the disk: black
 
 
 def test_null_and_hard_saturation_sentinels():

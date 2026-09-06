@@ -163,8 +163,14 @@ def estimate_sky_and_smear(
                 all_edge.append(v)
                 cols[s].append(v)
 
-    sky = _median(all_edge)
-    sigma = _mad_sigma(all_edge, sky)
+    # On the near-approach frames the smear reaches the edge rows across most of
+    # the frame width, so a plain median of the edge pixels is biased high. The
+    # 25th percentile still lands in clean sky as long as < 75% of columns smear,
+    # and the noise sigma is taken from the lower (clean) half only.
+    all_edge.sort()
+    sky = _percentile(all_edge, 25.0)
+    lower = all_edge[: max(1, len(all_edge) // 2)]
+    sigma = _mad_sigma(lower, sky)
     excess = [max(0.0, (_median(c) - sky) if c else 0.0) for c in cols]
     return sky, sigma, _smooth(excess, smooth)
 
@@ -182,26 +188,49 @@ def _detect_ceiling(data: array) -> float | None:
     return hi if hits >= 50 else None
 
 
-def _inpaint_columns(corrected: array, samples: int, lines: int, dead: list[int]) -> None:
-    """Linearly interpolate whole dead columns from their nearest live neighbours."""
+def _inpaint_dead_columns(
+    corrected: array, bright: bytearray, samples: int, lines: int, dead: list[int]
+) -> None:
+    """Fill smear-saturated columns *per row* by interpolating across the gap from
+    the nearest live column on each side.
+
+    The corrected values are meaningful (high where Earth is, ~0 for sky), so a
+    sky row fills to ~0 (black) and an Earth row fills between its two limbs. When
+    both anchors are saturated target ("bright"), the filled pixels are marked
+    bright too — otherwise a wide dead band across Earth would fill from the dim,
+    smear-eaten limb pixels and render as a black gap.
+    """
     if not dead:
         return
     deadset = set(dead)
-    live = [s for s in range(samples) if s not in deadset]
-    if not live:
-        return
-    for s in dead:
-        left = max((x for x in live if x < s), default=None)
-        right = min((x for x in live if x > s), default=None)
-        for ln in range(lines):
-            row = ln * samples
-            if left is None:
-                corrected[row + s] = corrected[row + right]
-            elif right is None:
-                corrected[row + s] = corrected[row + left]
-            else:
-                f = (s - left) / (right - left)
-                corrected[row + s] = corrected[row + left] * (1 - f) + corrected[row + right] * f
+    for ln in range(lines):
+        row = ln * samples
+        s = 0
+        while s < samples:
+            if s not in deadset:
+                s += 1
+                continue
+            e = s
+            while e < samples and e in deadset:
+                e += 1
+            left = row + s - 1 if s > 0 else None
+            right = row + e if e < samples else None
+            span_bright = left is not None and right is not None and bright[left] and bright[right]
+            for x in range(s, e):
+                if left is None and right is None:
+                    corrected[row + x] = 0.0
+                elif left is None:
+                    corrected[row + x] = corrected[right]
+                    bright[row + x] = bright[right]
+                elif right is None:
+                    corrected[row + x] = corrected[left]
+                    bright[row + x] = bright[left]
+                else:
+                    f = (x - (s - 1)) / (e - (s - 1))
+                    corrected[row + x] = corrected[left] * (1 - f) + corrected[right] * f
+                    if span_bright:
+                        bright[row + x] = 1
+            s = e
 
 
 def finalize(
@@ -220,7 +249,8 @@ def finalize(
     ceil_eps = max(1.0, abs(ceiling) * 1e-4) if ceiling is not None else 0.0
 
     # Columns where the smear itself reaches saturation carry no recoverable
-    # signal (sky and target alike are clipped) -> inpaint them for display.
+    # signal (sky and target alike are clipped). They form a contiguous central
+    # band; fill it per-row from the live columns on either side (see below).
     dead_cols: list[int] = []
     if ceiling is not None:
         limit = (ceiling - sky) - max(4.0 * sigma, 20.0)
@@ -248,14 +278,14 @@ def finalize(
             corrected[row + s] = cv
             if s not in deadset:
                 valid.append(cv)
-            if ceiling is not None and v >= ceiling - ceil_eps and s not in deadset:
-                bright[row + s] = 1
-                sat_count += 1
+                if ceiling is not None and v >= ceiling - ceil_eps:
+                    bright[row + s] = 1
+                    sat_count += 1
 
-    _inpaint_columns(corrected, samples, lines, dead_cols)
+    _inpaint_dead_columns(corrected, bright, samples, lines, dead_cols)
 
     if not valid:
-        raise RuntimeError("no valid pixels after smear correction")
+        raise RuntimeError("no usable pixels (frame is entirely NULL or saturated)")
 
     valid.sort()
     black = black_sigma * sigma if sigma > 0 else _percentile(valid, 50.0)

@@ -145,7 +145,18 @@ process_frame() {
         samples=SAMPLES; lines=LINES
     fi
 
-    run isis2raw from="$cal" to="$raw" bittype=32BIT
+    # stretch=none: pass real calibrated DN through unscaled. The default LINEAR
+    # stretch clips to a 0.5-99.5 percentile window, which collapses to nothing on
+    # the near-approach frames where saturated Earth dominates the histogram.
+    run isis2raw from="$cal" to="$raw" bittype=32BIT stretch=none endian=lsb
+
+    # Copy the calibrated float raster next to the PNG *before* the finalize step
+    # so it is in the artifact even if finalize fails — lets the display stretch
+    # be tuned offline with no CI re-run.
+    if [[ $DRY_RUN -eq 0 && -s "$raw" ]]; then
+        gzip -c "$raw" > "${OUTPUT_DIR}/${id}.cal.raw.gz" || true
+    fi
+
     run python3 "$FINALIZE" "$raw" "$png" --samples "$samples" --lines "$lines"
 
     if [[ $DRY_RUN -eq 0 && ! -s "$png" ]]; then
@@ -153,12 +164,6 @@ process_frame() {
         return 1
     fi
     log "frame ${id} -> ${png}"
-
-    # Copy the calibrated float raster next to the PNG so it can be pulled from
-    # the workflow artifact and the display stretch tuned offline (no re-run).
-    if [[ $DRY_RUN -eq 0 ]]; then
-        gzip -c "$raw" > "${OUTPUT_DIR}/${id}.cal.raw.gz" || true
-    fi
 
     if [[ $KEEP_INTERMEDIATES -eq 0 && $DRY_RUN -eq 0 ]]; then
         rm -f "$cub" "$cal" "$raw" "${cub}.ecub" || true
