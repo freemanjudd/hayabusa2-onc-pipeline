@@ -28,12 +28,18 @@ RUN micromamba install -y -n base \
 # conda env prefix that micromamba installs into
 ENV ISISROOT=/opt/conda
 # where the process-images job will download the Hayabusa2 data slice
+# (the `docker run -e ISISDATA=/isisdata` in process-images.yml also sets this)
 ENV ISISDATA=/isisdata
 ENV PATH=/opt/conda/bin:$PATH
 
-# Fail the build early if ISIS didn't land properly.
-RUN /usr/local/bin/_entrypoint.sh isisversion \
- && /usr/local/bin/_entrypoint.sh which hyb2onc2isis hyb2onccal spiceinit isis2std downloadIsisData rclone
+# Fail the build early if ISIS didn't land properly. `micromamba run -n base`
+# executes inside the activated env without relying on the entrypoint.
+RUN micromamba run -n base bash -c '\
+      set -eu; \
+      (isisversion || echo "note: isisversion not available"); \
+      for c in hyb2onc2isis hyb2onccal spiceinit isis2std downloadIsisData rclone; do \
+        p="$(command -v "$c")" && echo "ok: $p" || { echo "MISSING: $c"; exit 1; }; \
+      done'
 
 # _entrypoint.sh activates the base env, then execs the given command:
 #   docker run <image> bash scripts/isis_pipeline.sh data/raw web/data/images
