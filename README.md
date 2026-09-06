@@ -65,6 +65,12 @@ bash scripts/isis_pipeline.sh --dry-run data/raw web/data/images
 See [`CLAUDE.md`](CLAUDE.md) for the full architecture, the local-vs-CI boundary,
 and the project constraints.
 
+## Build report
+
+[`docs/build-report.md`](docs/build-report.md) is a plain-language account of how
+the pipeline was built — the infrastructure, what each image-processing step does,
+and the eight problems solved along the way. Written for a non-specialist reader.
+
 ## Data source & citation
 
 Hayabusa2 ONC data are archived by the NASA Planetary Data System Small Bodies
