@@ -127,10 +127,12 @@ GHCR image: `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis`
 - [x] Repo Settings → Actions → Workflow permissions → Read and write
 - [x] Pages → Source: GitHub Actions
 - [x] First push; `ci` + `pages` workflows green
-- [x] Pages live: <https://freemanjudd.github.io/hayabusa2-onc-pipeline/> (placeholder data)
 - [x] `build-isis-image.yml` succeeded (commit f981e40) → `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis:latest` in GHCR
-- [x] First `process-images` run (`frame_count=1`): full ISIS chain works; found + fixed isis2std PNG/bittype, then added smear correction + asinh (`finalize_png.py`)
+- [x] `process-images` bring-up: fixed isis2std→isis2raw, added smear correction + asinh
+      (`finalize_png.py`), fixed near-approach saturation (`stretch=none` + robust sky/dead-column handling)
 - [x] Full 19-frame run reviewed — clean approach sequence (Earth dot -> half-disk exiting frame)
-- [x] `process-images` `frame_count=19` + `commit_results=true` -> 19 PNGs + manifest committed (c5759a3)
-- [ ] Pages redeploy (the first data commit had `[skip ci]` which blocked it — fixed;
-      run the `pages` workflow manually once, then future data commits redeploy on their own)
+- [x] `frame_count=19` + `commit_results=true` -> 19 PNGs + manifest committed (c5759a3)
+- [x] **Pages live with real data: <https://freemanjudd.github.io/hayabusa2-onc-pipeline/>**
+
+**Project complete.** To reprocess: `process-images` (`frame_count=1` to smoke-test,
+then `19`, then `+commit_results`). Rebuild `build-isis-image` only if `docker/Dockerfile` changes.

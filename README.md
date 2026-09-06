@@ -12,7 +12,7 @@ image. Everything you run on your own machine (data download, manifest
 generation, the web viewer) is pure Python / JavaScript with no dependencies.
 
 **Repo:** <https://github.com/freemanjudd/hayabusa2-onc-pipeline> &nbsp;·&nbsp;
-**Live viewer:** <https://freemanjudd.github.io/hayabusa2-onc-pipeline/> (placeholder data until the first full pipeline run) &nbsp;·&nbsp; cost to run: **$0**
+**Live viewer:** <https://freemanjudd.github.io/hayabusa2-onc-pipeline/> — 19 calibrated ONC-W2 frames &nbsp;·&nbsp; cost to run: **$0**
 
 ## How it works
 
