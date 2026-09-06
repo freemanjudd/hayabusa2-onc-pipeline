@@ -119,7 +119,11 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f web/data/manifest.json web/data/images/*.png
+          # a full run supersedes the checked-in placeholder gallery
+          if ls web/data/images/*_w2f_l2a.png >/dev/null 2>&1; then
+            git rm -f --ignore-unmatch web/data/images/placeholder_*.png
+          fi
+          git add -f web/data/manifest.json web/data/images/*_w2f_l2a.png
           if git diff --cached --quiet; then
             echo "Nothing changed in web/data — not committing."
           else
