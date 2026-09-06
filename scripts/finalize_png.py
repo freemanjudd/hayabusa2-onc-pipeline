@@ -15,11 +15,13 @@ Pipeline:
    correction is not currently provided, as we do not have the readout time").
    We take the sky+bias pedestal as the global median of the top/bottom edge
    rows (always sky here — Earth never reaches the frame edges), take each
-   column's *excess* over that as its smear, smooth it across columns, and
-   subtract ``sky + smear[column]`` from every pixel.
+   column's *excess* over that as its smear, and subtract ``sky + smear[column]``
+   from every pixel. Columns where the smear itself hits the saturation ceiling
+   carry no recoverable signal and are inpainted from their neighbours.
 3. **asinh display stretch.** The nav exposures drive Earth to near-saturation;
    a linear stretch renders it as a white blob. asinh compresses the bright end
-   so the disk and terminator are legible.
+   so the disk and terminator are legible. Genuinely saturated target pixels are
+   forced white.
 4. Write an 8-bit grayscale PNG, plus a ``<out>.stats.json`` sidecar for the
    manifest / debugging.
 """
@@ -167,20 +169,66 @@ def estimate_sky_and_smear(
     return sky, sigma, _smooth(excess, smooth)
 
 
+def _detect_ceiling(data: array) -> float | None:
+    """The DN value bright pixels pile up at, if the frame has a saturation clip."""
+    hi = NULL_BELOW
+    for v in data:
+        if math.isfinite(v) and NULL_BELOW < v < SAT_ABOVE and v > hi:
+            hi = v
+    if hi <= NULL_BELOW:
+        return None
+    eps = max(1.0, abs(hi) * 1e-4)
+    hits = sum(1 for v in data if math.isfinite(v) and v >= hi - eps)
+    return hi if hits >= 50 else None
+
+
+def _inpaint_columns(corrected: array, samples: int, lines: int, dead: list[int]) -> None:
+    """Linearly interpolate whole dead columns from their nearest live neighbours."""
+    if not dead:
+        return
+    deadset = set(dead)
+    live = [s for s in range(samples) if s not in deadset]
+    if not live:
+        return
+    for s in dead:
+        left = max((x for x in live if x < s), default=None)
+        right = min((x for x in live if x > s), default=None)
+        for ln in range(lines):
+            row = ln * samples
+            if left is None:
+                corrected[row + s] = corrected[row + right]
+            elif right is None:
+                corrected[row + s] = corrected[row + left]
+            else:
+                f = (s - left) / (right - left)
+                corrected[row + s] = corrected[row + left] * (1 - f) + corrected[row + right] * f
+
+
 def finalize(
     data: array,
     samples: int,
     lines: int,
     *,
     edge: int = 64,
-    black_sigma: float = 2.5,
-    white_pct: float = 99.97,
-    soft_frac: float = 0.03,
-    smear_smooth: int = 3,
+    black_sigma: float = 5.0,
+    white_pct: float = 99.9,
+    soft_frac: float = 0.055,
+    smear_smooth: int = 1,
 ) -> tuple[bytearray, dict]:
     sky, sigma, smear = estimate_sky_and_smear(data, samples, lines, edge, smear_smooth)
+    ceiling = _detect_ceiling(data)
+    ceil_eps = max(1.0, abs(ceiling) * 1e-4) if ceiling is not None else 0.0
+
+    # Columns where the smear itself reaches saturation carry no recoverable
+    # signal (sky and target alike are clipped) -> inpaint them for display.
+    dead_cols: list[int] = []
+    if ceiling is not None:
+        limit = (ceiling - sky) - max(4.0 * sigma, 20.0)
+        dead_cols = [s for s in range(samples) if smear[s] >= limit]
+    deadset = set(dead_cols)
 
     corrected = array("f", bytes(4 * samples * lines))
+    bright = bytearray(samples * lines)  # genuine saturated target pixels -> white
     valid: list[float] = []
     null_count = sat_count = 0
     for ln in range(lines):
@@ -193,11 +241,18 @@ def finalize(
                 continue
             if v >= SAT_ABOVE:
                 corrected[row + s] = math.inf
+                bright[row + s] = 1
                 sat_count += 1
                 continue
             cv = v - sky - smear[s]
             corrected[row + s] = cv
-            valid.append(cv)
+            if s not in deadset:
+                valid.append(cv)
+            if ceiling is not None and v >= ceiling - ceil_eps and s not in deadset:
+                bright[row + s] = 1
+                sat_count += 1
+
+    _inpaint_columns(corrected, samples, lines, dead_cols)
 
     if not valid:
         raise RuntimeError("no valid pixels after smear correction")
@@ -213,10 +268,10 @@ def finalize(
     px = bytearray(samples * lines)
     for i in range(samples * lines):
         cv = corrected[i]
-        if cv != cv:  # NaN -> NULL
-            px[i] = 0
-        elif cv == math.inf:  # hard saturation
+        if bright[i] or cv == math.inf:
             px[i] = 255
+        elif cv != cv:  # NaN -> NULL
+            px[i] = 0
         else:
             t = math.asinh((cv - black) / soft) / denom
             if t <= 0.0:
@@ -232,13 +287,15 @@ def finalize(
         "sky_dn": round(sky, 3),
         "sky_sigma_dn": round(sigma, 3),
         "smear_max_dn": round(max(smear), 3),
+        "saturation_ceiling_dn": round(ceiling, 3) if ceiling is not None else None,
+        "dead_columns": len(dead_cols),
         "black_dn": round(black, 3),
         "white_dn": round(white, 3),
         "asinh_softening_dn": round(soft, 3),
         "null_pixels": null_count,
         "saturated_pixels": sat_count,
         "display_stretch": "asinh",
-        "smear_correction": "per-column excess over sky (edge rows), smoothed",
+        "smear_correction": "per-column excess over sky (edge rows); saturated columns inpainted",
     }
     return px, stats
 
@@ -278,12 +335,12 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                    help="byte order of infile (isis2raw writes host order; 'auto' detects)")
     p.add_argument("--edge", type=int, default=64,
                    help="edge rows used to estimate sky + smear (0 disables smear correction)")
-    p.add_argument("--black-sigma", type=float, default=2.5,
+    p.add_argument("--black-sigma", type=float, default=5.0,
                    help="black point, in sky-noise sigmas above the (corrected) sky")
-    p.add_argument("--white-percentile", type=float, default=99.97)
-    p.add_argument("--soft-frac", type=float, default=0.03,
+    p.add_argument("--white-percentile", type=float, default=99.9)
+    p.add_argument("--soft-frac", type=float, default=0.055,
                    help="asinh softening as a fraction of (white-black)")
-    p.add_argument("--smear-smooth", type=int, default=3,
+    p.add_argument("--smear-smooth", type=int, default=1,
                    help="moving-average window (columns) applied to the smear estimate")
     return p.parse_args(argv)
 

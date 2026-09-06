@@ -34,7 +34,8 @@ function metaRows(img) {
     ["Processing level", img.processing_level],
     ["Display stretch", d.display_stretch],
     ["Smear removed", d.smear_max_dn != null ? `up to ${Math.round(d.smear_max_dn)} DN / column` : null],
-    ["Saturated pixels", d.saturated_pixels != null ? d.saturated_pixels.toLocaleString("en-US") : null],
+    ["Saturated pixels", d.saturated_pixels ? d.saturated_pixels.toLocaleString("en-US") : null],
+    ["Inpainted columns", d.dead_columns ? String(d.dead_columns) : null],
   ];
   return rows.filter(([, v]) => v != null && v !== "");
 }

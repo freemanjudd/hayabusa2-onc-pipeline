@@ -27,7 +27,13 @@
       "earth_distance_km": 202859.0,
       "processing_level": "placeholder",
       "source_label_url": "https://sbnarchive.psi.edu/pds4/hayabusa2/hyb2_onc/data_raw/earth_swing-by/20151203/hyb2_onc_20151203_000006_w2f_l2a.xml",
-      "display": { "display_stretch": "asinh", "smear_max_dn": 0, "saturated_pixels": 0 }
+      "display": {
+        "display_stretch": "asinh",
+        "smear_max_dn": 0,
+        "saturation_ceiling_dn": null,
+        "dead_columns": 0,
+        "saturated_pixels": 0
+      }
     },
     {
       "id": "placeholder_b",
@@ -42,7 +48,13 @@
       "earth_distance_km": 19646.8,
       "processing_level": "placeholder",
       "source_label_url": "https://sbnarchive.psi.edu/pds4/hayabusa2/hyb2_onc/data_raw/earth_swing-by/20151203/hyb2_onc_20151203_092958_w2f_l2a.xml",
-      "display": { "display_stretch": "asinh", "smear_max_dn": 0, "saturated_pixels": 0 }
+      "display": {
+        "display_stretch": "asinh",
+        "smear_max_dn": 0,
+        "saturation_ceiling_dn": null,
+        "dead_columns": 0,
+        "saturated_pixels": 0
+      }
     }
   ]
 }

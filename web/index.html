@@ -30,6 +30,8 @@
           pixels in its column, leaving a vertical band. USGS ISIS <code>hyb2onccal</code>
           does not correct this, so the pipeline removes it with a per-column
           background subtraction estimated from the (always-sky) top and bottom edge rows.
+          In the few central columns where the smear itself saturated the detector,
+          nothing is recoverable and those columns are interpolated from their neighbours.
         </li>
         <li>
           <strong>Exposure.</strong> The short nav exposures (~4&nbsp;ms) drive Earth
