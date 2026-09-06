@@ -120,7 +120,8 @@ process_frame() {
 
     run hyb2onccal from="$cub" to="$cal"
 
-    run isis2std from="$cal" to="$png" format=png bittype=U8BIT \
+    # isis2std rejects BITTYPE when FORMAT=PNG (PNG output is 8-bit).
+    run isis2std from="$cal" to="$png" format=png \
         stretch=linear minpercent=0.5 maxpercent=99.5
 
     if [[ $DRY_RUN -eq 0 && ! -s "$png" ]]; then
