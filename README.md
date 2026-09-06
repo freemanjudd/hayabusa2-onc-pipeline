@@ -21,8 +21,9 @@ config/frames.txt ──► download_data.py ──► data/raw/*.fit + *.xml   
                                              │
                           ┌──────────────────┘  (inside CI container only)
                           ▼
-   hyb2onc2isis ──► spiceinit ──► hyb2onccal ──► isis2std ──► web/data/images/*.png
-                                             │
+   hyb2onc2isis ─► spiceinit ─► hyb2onccal ─► isis2raw ─► finalize_png.py ─► web/data/images/*.png
+                              (ISIS, in CI)              (pure Python: smear
+                                             │            correction + asinh stretch)
                                              ▼
                           make_manifest.py ──► web/data/manifest.json
                                              │

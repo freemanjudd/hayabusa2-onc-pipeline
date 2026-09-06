@@ -69,16 +69,23 @@ log "work  : ${WORK_DIR}"
 echo "ISISROOT=${ISISROOT:-<unset>}"
 echo "ISISDATA=${ISISDATA:-<unset>}"
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+FINALIZE="${SCRIPT_DIR}/finalize_png.py"
+
 if [[ $DRY_RUN -eq 0 ]]; then
-    if ! command -v hyb2onc2isis >/dev/null 2>&1; then
-        log "FATAL: ISIS binaries not on PATH — this script must run inside the ISIS container"
-        exit 3
-    fi
-    echo "--- isis version ---";      isisversion || true
+    for bin in hyb2onc2isis spiceinit hyb2onccal isis2raw getkey python3; do
+        command -v "$bin" >/dev/null 2>&1 || {
+            log "FATAL: '$bin' not on PATH — this script must run inside the ISIS container"
+            exit 3
+        }
+    done
+    echo "--- isis version ---";      cat "${ISISROOT:-/dev/null}/version" 2>/dev/null || echo "(no version file)"
+    echo "--- python ---";            python3 --version
     echo "--- ISISDATA top level ---"; ls -la "${ISISDATA:-/dev/null}" 2>/dev/null || true
     echo "--- ISISDATA/hayabusa2 ---"; ls -la "${ISISDATA:-/dev/null}/hayabusa2" 2>/dev/null || true
     echo "--- disk usage ---";        df -h . "${ISISDATA:-/}" 2>/dev/null || true
     echo "--- ISISDATA sizes ---";    du -sh "${ISISDATA:-/dev/null}"/* 2>/dev/null || true
+    [[ -f "$FINALIZE" ]] || { log "FATAL: finalize script not found at $FINALIZE"; exit 3; }
 fi
 
 mkdir -p "$OUTPUT_DIR" "$WORK_DIR"
@@ -96,10 +103,11 @@ printf '  %s\n' "${FITS[@]}"
 
 process_frame() {
     local fit="$1"
-    local id cub cal png
+    local id cub cal raw png
     id="$(basename "$fit")"; id="${id%.*}"
     cub="${WORK_DIR}/${id}.cub"
     cal="${WORK_DIR}/${id}.cal.cub"
+    raw="${WORK_DIR}/${id}.cal.raw"
     png="${OUTPUT_DIR}/${id}.png"
 
     banner "FRAME ${id}"
@@ -118,11 +126,27 @@ process_frame() {
         echo "+ spiceinit from=$cub   (local, with web=true fallback)"
     fi
 
+    # Bias + dark + (flat, if available) radiometric calibration. Note: ISIS
+    # hyb2onccal does NOT correct readout smear (see finalize_png.py).
     run hyb2onccal from="$cub" to="$cal"
 
-    # isis2std rejects BITTYPE when FORMAT=PNG (PNG output is 8-bit).
-    run isis2std from="$cal" to="$png" format=png \
-        stretch=linear minpercent=0.5 maxpercent=99.5
+    # Hand the calibrated pixels to the pure-Python finalizer as a raw float32
+    # raster: it does readout-smear correction + an asinh display stretch + PNG.
+    local samples lines
+    if [[ $DRY_RUN -eq 0 ]]; then
+        samples="$(getkey from="$cal" grpname=Dimensions keyword=Samples recursive=true 2>/dev/null || true)"
+        lines="$(getkey from="$cal" grpname=Dimensions keyword=Lines recursive=true 2>/dev/null || true)"
+        if [[ ! "$samples" =~ ^[0-9]+$ || ! "$lines" =~ ^[0-9]+$ ]]; then
+            log "WARN: getkey did not return dimensions (got '${samples}' x '${lines}'); assuming 1024 x 1024"
+            samples=1024; lines=1024
+        fi
+        log "calibrated dimensions: ${samples} x ${lines}"
+    else
+        samples=SAMPLES; lines=LINES
+    fi
+
+    run isis2raw from="$cal" to="$raw" bittype=32BIT
+    run python3 "$FINALIZE" "$raw" "$png" --samples "$samples" --lines "$lines"
 
     if [[ $DRY_RUN -eq 0 && ! -s "$png" ]]; then
         log "ERROR: expected PNG not produced: ${png}"
@@ -131,7 +155,7 @@ process_frame() {
     log "frame ${id} -> ${png}"
 
     if [[ $KEEP_INTERMEDIATES -eq 0 && $DRY_RUN -eq 0 ]]; then
-        rm -f "$cub" "$cal" "${cub}.ecub" || true
+        rm -f "$cub" "$cal" "$raw" "${cub}.ecub" || true
     fi
 }
 

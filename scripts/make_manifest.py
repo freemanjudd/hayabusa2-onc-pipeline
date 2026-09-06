@@ -52,7 +52,17 @@ DATASET = {
         "urn:jaxa:darts:hyb2_onc::1.0, NASA Planetary Data System. "
         "https://doi.org/10.17597/isas.darts/hyb2-00200"
     ),
-    "processing": "USGS ISIS: hyb2onc2isis -> spiceinit -> hyb2onccal -> isis2std",
+    "processing": (
+        "USGS ISIS (hyb2onc2isis -> spiceinit -> hyb2onccal, bias+dark) "
+        "-> isis2raw -> finalize_png.py (readout-smear correction + asinh stretch)"
+    ),
+    "processing_notes": (
+        "ISIS hyb2onccal does not correct the frame-transfer readout smear "
+        "(the vertical band from bright Earth); this pipeline removes it with a "
+        "per-column edge-row background subtraction. Display uses an asinh "
+        "stretch because the short optical-navigation exposures drive Earth "
+        "close to saturation."
+    ),
 }
 
 log = logging.getLogger("make_manifest")
@@ -159,6 +169,12 @@ def build_manifest(
         if png_path.is_file():
             rec["png"] = f"images/{rec['id']}.png"
             rec["png_bytes"] = png_path.stat().st_size
+            stats_path = images_dir / f"{rec['id']}.png.stats.json"
+            if stats_path.is_file():
+                try:
+                    rec["display"] = json.loads(stats_path.read_text())
+                except (ValueError, OSError) as err:
+                    log.warning("could not read %s: %s", stats_path, err)
         elif allow_missing_png:
             rec["png"] = None
             rec["png_bytes"] = None

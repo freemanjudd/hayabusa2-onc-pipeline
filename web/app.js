@@ -21,6 +21,7 @@ function fmtKm(km) {
 }
 
 function metaRows(img) {
+  const d = img.display || {};
   const rows = [
     ["Frame ID", img.id],
     ["Acquired", fmtTime(img.start_utc)],
@@ -31,6 +32,9 @@ function metaRows(img) {
     ["Band center", img.band_center_nm != null ? img.band_center_nm + " nm" : null],
     ["Dimensions", img.lines && img.samples ? `${img.samples} × ${img.lines}` : null],
     ["Processing level", img.processing_level],
+    ["Display stretch", d.display_stretch],
+    ["Smear removed", d.smear_max_dn != null ? `up to ${Math.round(d.smear_max_dn)} DN / column` : null],
+    ["Saturated pixels", d.saturated_pixels != null ? d.saturated_pixels.toLocaleString("en-US") : null],
   ];
   return rows.filter(([, v]) => v != null && v !== "");
 }
@@ -125,6 +129,7 @@ async function main() {
       .filter(Boolean)
       .join(" · ");
     $("#citation").textContent = ds.citation || "";
+    $("#pipeline-note").textContent = ds.processing ? "Pipeline: " + ds.processing : "";
 
     if (!state.images.length) {
       status.textContent = "Manifest loaded, but no images are available yet.";

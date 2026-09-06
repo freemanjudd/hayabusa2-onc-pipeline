@@ -24,8 +24,11 @@ Consequence — every file falls on one side of this boundary:
 
 | Side | Files | How it's tested |
 |---|---|---|
-| **Local / pure** (Python stdlib or plain JS, no ISIS/Docker) | `scripts/download_data.py`, `scripts/make_manifest.py`, `web/**` | `pytest`, `python -m http.server -d web`, run directly |
+| **Local / pure** (Python stdlib or plain JS, no ISIS/Docker) | `scripts/download_data.py`, `scripts/finalize_png.py`, `scripts/make_manifest.py`, `web/**` | `pytest`, `python -m http.server -d web`, run directly |
 | **CI container only** | `scripts/isis_pipeline.sh`, `docker/Dockerfile` | `bash -n`, `shellcheck`, `--dry-run`; real run only in Actions |
+
+`finalize_png.py` runs inside the CI job (right after ISIS) but is pure stdlib and
+unit-tested locally — the ISIS step just hands it a raw float32 raster via `isis2raw`.
 
 When adding code, keep it on the correct side. Do **not** add `astropy`, ISIS
 Python bindings, or anything that would pull a heavy scientific stack into the
@@ -60,6 +63,20 @@ Splitting them means the slow step isn't repeated on every pipeline run.
   `https://sbnarchive.psi.edu/pds4/hayabusa2/hyb2_onc/data_raw/earth_swing-by/20151203/`
 - Each frame = `<id>.fit` (2 MB raw FITS) + `<id>.xml` (PDS4 label).
 
+## Known instrument artifacts (this is expected, not a bug)
+
+- **Readout smear.** ONC-W2 is a shutterless frame-transfer CCD; bright Earth
+  leaves a vertical band down its column. ISIS `hyb2onccal` explicitly does **not**
+  correct it ("we do not have the readout time"). `finalize_png.py` removes it by
+  subtracting a per-column pedestal estimated from the top/bottom `--edge` rows
+  (always sky here — Earth peaks at ~55% of the frame on the closest frame).
+- **Saturation.** The ~4 ms optical-navigation exposures push Earth near full
+  well. `finalize_png.py` uses an asinh stretch; genuinely saturated pixels stay
+  white and cannot be recovered.
+- **Radiometry is nominal.** `hyb2onccal` does bias + dark (+ flat if available);
+  its I/F conversion uses placeholder solar/radiance constants, so treat output
+  as calibrated DN, not physical radiance.
+
 ## Constraints (do not violate)
 
 - **Never commit** `*.fit` / `*.fits` / `*.cub` / raw or intermediate products to
@@ -79,8 +96,9 @@ Splitting them means the slow step isn't repeated on every pipeline run.
 ```
 config/frames.txt          frame IDs (source of truth)
 scripts/download_data.py    PURE PYTHON — fetch .fit + .xml from PDS  -> data/raw/
-scripts/isis_pipeline.sh    CI ONLY — hyb2onc2isis -> spiceinit -> hyb2onccal -> isis2std
-scripts/make_manifest.py    PURE PYTHON — PDS4 labels + PNGs -> web/data/manifest.json
+scripts/isis_pipeline.sh    CI ONLY — hyb2onc2isis -> spiceinit -> hyb2onccal -> isis2raw
+scripts/finalize_png.py     PURE PYTHON (stdlib) — raw float32 -> smear correction + asinh -> PNG
+scripts/make_manifest.py    PURE PYTHON — PDS4 labels + PNGs + *.stats.json -> web/data/manifest.json
 docker/Dockerfile           ISIS environment
 web/                        static viewer (index.html / style.css / app.js)
 web/data/                   THE ONLY committed pipeline output (manifest.json + images/)
@@ -109,5 +127,6 @@ GHCR image: `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis`
 - [x] First push; `ci` + `pages` workflows green
 - [x] Pages live: <https://freemanjudd.github.io/hayabusa2-onc-pipeline/> (placeholder data)
 - [x] `build-isis-image.yml` succeeded (commit f981e40) → `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis:latest` in GHCR
-- [ ] `process-images.yml` run with `frame_count=1`, then `20`, then `commit_results=true`
+- [x] First `process-images` run (`frame_count=1`): full ISIS chain works; found + fixed isis2std PNG/bittype, then added smear correction + asinh (`finalize_png.py`)
+- [ ] Re-run `process-images` `frame_count=1` to check the new PNG, then `20`, then `commit_results=true`
 - [ ] Re-check live site after real data is committed

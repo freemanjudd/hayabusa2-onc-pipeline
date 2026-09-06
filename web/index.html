@@ -16,6 +16,29 @@
   <main>
     <p id="status" class="status">Loading&hellip;</p>
     <section id="gallery" class="gallery" aria-label="Image gallery"></section>
+
+    <details class="about">
+      <summary>About these images</summary>
+      <p>
+        These are real ONC-W2 frames captured for <em>optical navigation</em> during
+        Hayabusa2's Earth flyby, not for scientific imaging. Two things follow from that:
+      </p>
+      <ul>
+        <li>
+          <strong>Readout smear.</strong> ONC-W2 is a shutterless frame-transfer CCD:
+          while the image is clocked off the sensor, bright Earth keeps exposing the
+          pixels in its column, leaving a vertical band. USGS ISIS <code>hyb2onccal</code>
+          does not correct this, so the pipeline removes it with a per-column
+          background subtraction estimated from the (always-sky) top and bottom edge rows.
+        </li>
+        <li>
+          <strong>Exposure.</strong> The short nav exposures (~4&nbsp;ms) drive Earth
+          close to saturation. Frames are shown with an <code>asinh</code> stretch so the
+          disk and terminator stay legible instead of clipping to white.
+        </li>
+      </ul>
+      <p id="pipeline-note" class="pipeline-note"></p>
+    </details>
   </main>
 
   <div id="viewer" class="viewer" hidden aria-modal="true" role="dialog" aria-label="Image detail">
