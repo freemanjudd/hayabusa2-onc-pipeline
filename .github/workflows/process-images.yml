@@ -127,9 +127,11 @@ jobs:
           if git diff --cached --quiet; then
             echo "Nothing changed in web/data — not committing."
           else
-            git commit -m "data: process ${{ inputs.frame_count }} ONC-W2 frame(s) [skip ci]"
+            # No [skip ci]: the push must trigger the pages workflow. ci.yml
+            # ignores web/data/** so it won't run pytest on a data-only commit.
+            git commit -m "data: process ${{ inputs.frame_count }} ONC-W2 frame(s)"
             git push
-            echo "Committed web/data/** to ${{ github.ref_name }}."
+            echo "Committed web/data/** to ${{ github.ref_name }} — pages will redeploy."
           fi
 
       - name: Next steps

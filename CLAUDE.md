@@ -131,5 +131,6 @@ GHCR image: `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis`
 - [x] `build-isis-image.yml` succeeded (commit f981e40) → `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis:latest` in GHCR
 - [x] First `process-images` run (`frame_count=1`): full ISIS chain works; found + fixed isis2std PNG/bittype, then added smear correction + asinh (`finalize_png.py`)
 - [x] Full 19-frame run reviewed — clean approach sequence (Earth dot -> half-disk exiting frame)
-- [ ] Final `process-images` run with `frame_count=19` + `commit_results=true`
-- [ ] Re-check live site after real data is committed
+- [x] `process-images` `frame_count=19` + `commit_results=true` -> 19 PNGs + manifest committed (c5759a3)
+- [ ] Pages redeploy (the first data commit had `[skip ci]` which blocked it — fixed;
+      run the `pages` workflow manually once, then future data commits redeploy on their own)

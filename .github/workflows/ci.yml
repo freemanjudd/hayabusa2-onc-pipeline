@@ -5,6 +5,8 @@ name: ci
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "web/data/**"   # data-only commits from process-images -> let pages run, skip pytest
   pull_request:
 
 jobs:
