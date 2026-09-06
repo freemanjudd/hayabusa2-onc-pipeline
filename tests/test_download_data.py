@@ -73,9 +73,10 @@ def test_read_frames_rejects_empty(tmp_path):
         download_data.read_frames(f)
 
 
-def test_repo_frames_file_has_20_unique_ids():
+def test_repo_frames_file_is_the_approach_sequence():
     frames = download_data.read_frames(download_data.DEFAULT_FRAMES)
-    assert len(frames) == 20
+    assert len(frames) == 19
+    assert frames == sorted(frames)  # chronological
     assert all(f.startswith("hyb2_onc_20151203_") and f.endswith("_w2f_l2a") for f in frames)
 
 

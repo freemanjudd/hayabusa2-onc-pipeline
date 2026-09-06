@@ -39,7 +39,7 @@ Two manually-triggered workflows:
 | **process-images** | whenever you want to (re)process frames | pulls the container, runs the pipeline on `frame_count` frames, uploads an artifact, optionally commits `web/data/**` |
 
 Start every `process-images` run with `frame_count = 1` to smoke-test, then scale
-to 20.
+to 19 (the full set in `config/frames.txt`).
 
 ## Local development
 

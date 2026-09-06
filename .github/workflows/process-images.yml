@@ -5,7 +5,7 @@ name: process-images
 # Optionally commits web/data/** back to the branch.
 #
 # Run build-isis-image FIRST (once) so ghcr.io/<owner>/<repo>/isis:latest exists.
-# Always start with frame_count = 1 to smoke-test before scaling to 20.
+# Always start with frame_count = 1 to smoke-test before scaling to 19.
 
 on:
   workflow_dispatch:

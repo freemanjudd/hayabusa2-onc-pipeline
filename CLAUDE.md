@@ -57,8 +57,10 @@ Splitting them means the slow step isn't repeated on every pipeline run.
 
 - Source: NASA PDS SBN, bundle `urn:jaxa:darts:hyb2_onc::1.0` (DOI
   `10.17597/isas.darts/hyb2-00200`), mirrored at JAXA DARTS.
-- Frame list: **`config/frames.txt`** — the single source of truth. 20 ONC-W2
-  full-frame images, `hyb2_onc_20151203_*_w2f_l2a`, 00:00:06–09:29:58 UTC.
+- Frame list: **`config/frames.txt`** — the single source of truth. 19 ONC-W2
+  full-frame images, `hyb2_onc_20151203_*_w2f_l2a`, 00:00:06–09:14:58 UTC. The
+  archive has one more W2 frame (09:29:58) but Earth has left the field of view
+  by then.
 - Archive path:
   `https://sbnarchive.psi.edu/pds4/hayabusa2/hyb2_onc/data_raw/earth_swing-by/20151203/`
 - Each frame = `<id>.fit` (2 MB raw FITS) + `<id>.xml` (PDS4 label).
@@ -128,5 +130,6 @@ GHCR image: `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis`
 - [x] Pages live: <https://freemanjudd.github.io/hayabusa2-onc-pipeline/> (placeholder data)
 - [x] `build-isis-image.yml` succeeded (commit f981e40) → `ghcr.io/freemanjudd/hayabusa2-onc-pipeline/isis:latest` in GHCR
 - [x] First `process-images` run (`frame_count=1`): full ISIS chain works; found + fixed isis2std PNG/bittype, then added smear correction + asinh (`finalize_png.py`)
-- [ ] Re-run `process-images` `frame_count=1` to check the new PNG, then `20`, then `commit_results=true`
+- [x] Full 19-frame run reviewed — clean approach sequence (Earth dot -> half-disk exiting frame)
+- [ ] Final `process-images` run with `frame_count=19` + `commit_results=true`
 - [ ] Re-check live site after real data is committed
