@@ -8,14 +8,15 @@ after the ISIS calibration step, and is fully testable locally.
 Pipeline:
 
 1. Read a raw 32-bit float image (single band, band-sequential) as written by
-   ``isis2raw ... bittype=REAL``.
+   ``isis2raw ... bittype=32BIT``. Also accepts a ``.gz`` of the same.
 2. **Readout-smear correction.** ONC-W2 is a shutterless frame-transfer CCD, so a
    bright source paints a vertical band down its column while the frame is
    clocked off the sensor. ISIS ``hyb2onccal`` does *not* remove this ("Smear
    correction is not currently provided, as we do not have the readout time").
-   We estimate the per-column smear + sky pedestal from the top/bottom edge rows
-   (always sky for the 2015 Earth-flyby set — Earth never reaches the frame
-   edges) and subtract it column-by-column.
+   We take the sky+bias pedestal as the global median of the top/bottom edge
+   rows (always sky here — Earth never reaches the frame edges), take each
+   column's *excess* over that as its smear, smooth it across columns, and
+   subtract ``sky + smear[column]`` from every pixel.
 3. **asinh display stretch.** The nav exposures drive Earth to near-saturation;
    a linear stretch renders it as a white blob. asinh compresses the bright end
    so the disk and terminator are legible.
@@ -26,6 +27,7 @@ Pipeline:
 from __future__ import annotations
 
 import argparse
+import gzip
 import json
 import math
 import struct
@@ -66,7 +68,8 @@ def _junk_fraction(data: array) -> float:
 
 
 def read_raw_f32(path: Path, samples: int, lines: int, endian: str) -> array:
-    raw = Path(path).read_bytes()
+    path = Path(path)
+    raw = gzip.decompress(path.read_bytes()) if path.suffix == ".gz" else path.read_bytes()
     expected = samples * lines * 4
     if len(raw) < expected:
         raise ValueError(
@@ -114,19 +117,54 @@ def _percentile(sorted_vals: list[float], pct: float) -> float:
     return sorted_vals[lo] * (hi - k) + sorted_vals[hi] * (k - lo)
 
 
-def estimate_smear(data: array, samples: int, lines: int, edge: int) -> list[float]:
-    """Per-column (sample) smear + background pedestal, from the edge rows."""
-    edge = max(1, min(edge, lines // 2))
+def _mad_sigma(values: list[float], center: float) -> float:
+    if not values:
+        return 0.0
+    dev = sorted(abs(v - center) for v in values)
+    return 1.4826 * dev[len(dev) // 2]
+
+
+def _smooth(seq: list[float], window: int) -> list[float]:
+    """Simple centred moving average (odd window)."""
+    if window <= 1:
+        return list(seq)
+    half = window // 2
+    n = len(seq)
+    out = [0.0] * n
+    for i in range(n):
+        lo, hi = max(0, i - half), min(n, i + half + 1)
+        out[i] = sum(seq[lo:hi]) / (hi - lo)
+    return out
+
+
+def estimate_sky_and_smear(
+    data: array, samples: int, lines: int, edge: int, smooth: int
+) -> tuple[float, float, list[float]]:
+    """Global sky level + noise, and the per-column *excess* smear over sky.
+
+    The edge rows (first/last ``edge`` lines) are always sky for this data set, so
+    their global median is the sky+bias pedestal and each column's median minus
+    that is the additive readout-smear contribution for that column.
+    """
+    edge = max(1, min(edge, lines // 2)) if edge > 0 else 0
+    if edge == 0:
+        return 0.0, 0.0, [0.0] * samples
+
     edge_lines = list(range(edge)) + list(range(lines - edge, lines))
-    smear = [0.0] * samples
-    for s in range(samples):
-        col = []
-        for ln in edge_lines:
-            v = data[ln * samples + s]
+    all_edge: list[float] = []
+    cols: list[list[float]] = [[] for _ in range(samples)]
+    for ln in edge_lines:
+        row = ln * samples
+        for s in range(samples):
+            v = data[row + s]
             if math.isfinite(v) and SANE_LO < v < SANE_HI:
-                col.append(v)
-        smear[s] = _median(col) if col else 0.0
-    return smear
+                all_edge.append(v)
+                cols[s].append(v)
+
+    sky = _median(all_edge)
+    sigma = _mad_sigma(all_edge, sky)
+    excess = [max(0.0, (_median(c) - sky) if c else 0.0) for c in cols]
+    return sky, sigma, _smooth(excess, smooth)
 
 
 def finalize(
@@ -135,11 +173,12 @@ def finalize(
     lines: int,
     *,
     edge: int = 64,
-    black_pct: float = 1.0,
-    white_pct: float = 99.9,
-    soft_frac: float = 0.02,
+    black_sigma: float = 2.5,
+    white_pct: float = 99.97,
+    soft_frac: float = 0.03,
+    smear_smooth: int = 3,
 ) -> tuple[bytearray, dict]:
-    smear = estimate_smear(data, samples, lines, edge)
+    sky, sigma, smear = estimate_sky_and_smear(data, samples, lines, edge, smear_smooth)
 
     corrected = array("f", bytes(4 * samples * lines))
     valid: list[float] = []
@@ -156,7 +195,7 @@ def finalize(
                 corrected[row + s] = math.inf
                 sat_count += 1
                 continue
-            cv = v - smear[s]
+            cv = v - sky - smear[s]
             corrected[row + s] = cv
             valid.append(cv)
 
@@ -164,7 +203,7 @@ def finalize(
         raise RuntimeError("no valid pixels after smear correction")
 
     valid.sort()
-    black = _percentile(valid, black_pct)
+    black = black_sigma * sigma if sigma > 0 else _percentile(valid, 50.0)
     white = _percentile(valid, white_pct)
     if white <= black:
         white = black + 1.0
@@ -190,7 +229,8 @@ def finalize(
     stats = {
         "samples": samples,
         "lines": lines,
-        "smear_median_dn": round(_median(smear), 3),
+        "sky_dn": round(sky, 3),
+        "sky_sigma_dn": round(sigma, 3),
         "smear_max_dn": round(max(smear), 3),
         "black_dn": round(black, 3),
         "white_dn": round(white, 3),
@@ -198,7 +238,7 @@ def finalize(
         "null_pixels": null_count,
         "saturated_pixels": sat_count,
         "display_stretch": "asinh",
-        "smear_correction": "per-column edge-row background subtraction",
+        "smear_correction": "per-column excess over sky (edge rows), smoothed",
     }
     return px, stats
 
@@ -236,11 +276,15 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--lines", type=int, required=True, help="image height (ISIS Lines)")
     p.add_argument("--endian", choices=["auto", "little", "big"], default="auto",
                    help="byte order of infile (isis2raw writes host order; 'auto' detects)")
-    p.add_argument("--edge", type=int, default=64, help="edge rows used to estimate smear")
-    p.add_argument("--black-percentile", type=float, default=1.0)
-    p.add_argument("--white-percentile", type=float, default=99.9)
-    p.add_argument("--soft-frac", type=float, default=0.02,
+    p.add_argument("--edge", type=int, default=64,
+                   help="edge rows used to estimate sky + smear (0 disables smear correction)")
+    p.add_argument("--black-sigma", type=float, default=2.5,
+                   help="black point, in sky-noise sigmas above the (corrected) sky")
+    p.add_argument("--white-percentile", type=float, default=99.97)
+    p.add_argument("--soft-frac", type=float, default=0.03,
                    help="asinh softening as a fraction of (white-black)")
+    p.add_argument("--smear-smooth", type=int, default=3,
+                   help="moving-average window (columns) applied to the smear estimate")
     return p.parse_args(argv)
 
 
@@ -250,9 +294,10 @@ def main(argv: list[str] | None = None) -> int:
     px, stats = finalize(
         data, args.samples, args.lines,
         edge=args.edge,
-        black_pct=args.black_percentile,
+        black_sigma=args.black_sigma,
         white_pct=args.white_percentile,
         soft_frac=args.soft_frac,
+        smear_smooth=args.smear_smooth,
     )
     args.outfile.parent.mkdir(parents=True, exist_ok=True)
     write_gray_png(args.outfile, args.samples, args.lines, px)

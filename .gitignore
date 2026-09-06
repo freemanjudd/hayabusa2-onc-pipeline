@@ -15,6 +15,7 @@
 pipeline.log
 *.geom.json
 *.raw
+*.raw.gz
 web/data/images/*.stats.json
 isisdata/
 

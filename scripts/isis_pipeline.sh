@@ -154,6 +154,12 @@ process_frame() {
     fi
     log "frame ${id} -> ${png}"
 
+    # Copy the calibrated float raster next to the PNG so it can be pulled from
+    # the workflow artifact and the display stretch tuned offline (no re-run).
+    if [[ $DRY_RUN -eq 0 ]]; then
+        gzip -c "$raw" > "${OUTPUT_DIR}/${id}.cal.raw.gz" || true
+    fi
+
     if [[ $KEEP_INTERMEDIATES -eq 0 && $DRY_RUN -eq 0 ]]; then
         rm -f "$cub" "$cal" "$raw" "${cub}.ecub" || true
     fi
